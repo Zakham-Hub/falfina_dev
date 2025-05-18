@@ -1,0 +1,35 @@
+{
+    "ibm plex sans arabic": {
+        "100": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/ibm_plex_sans_arabic_100_039b9d34a1c2c7c7c366569173bbb576",
+        "200": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/ibm_plex_sans_arabic_200_26cc5fdc318d9bbf2d5ddd98189996df",
+        "300": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/ibm_plex_sans_arabic_300_c5d59b85b4d48ef2d2172d05bc1b7e77",
+        "normal": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/ibm_plex_sans_arabic_normal_5bc367230d53d72c612e66aa5a51c7b7",
+        "500": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/ibm_plex_sans_arabic_500_0ca44c7125ceed9e189da5dee58dc821",
+        "600": "ibm_plex_sans_arabic_600_890ef84af4fb122ece09b9ead7f99b2f",
+        "bold": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/ibm_plex_sans_arabic_bold_aa4ab583e3a144a0d3e3e8a6235ede8d"
+    },
+    "cairo": {
+        "300": "cairo_300_adebfb94605daa8752959c1403988edc",
+        "normal": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/cairo_normal_040a14ebcb2e69e83169c84ef0a92e85"
+    },
+    "dropify": {
+        "normal": "dropify_normal_57775950e54345fa8160f5bc213750be"
+    },
+    "fcicons": {
+        "normal": "fcicons_normal_ccb13e8a7448000af724c5ad8196fef3"
+    },
+    "line awesome brands": {
+        "normal": "line_awesome_brands_normal_abf836ce594fea5f127143ec4063dc8c"
+    },
+    "line awesome free": {
+        "normal": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/line_awesome_free_normal_cca66118c248fa8e15ebbee9bdba5717",
+        "900": "line_awesome_free_900_15f5a099a83e851dbcb0ce0d18f9790e"
+    },
+    "font awesome 5 brands": {
+        "normal": "font_awesome_5_brands_normal_003724967c6bac765038f983c6e5be02"
+    },
+    "font awesome 5 free": {
+        "normal": "\/home\/u466710613\/domains\/falafina-test.shop\/public_html\/storage\/fonts\/font_awesome_5_free_normal_de9abfb4ad5cbd69d5d3e4e56eb35b90",
+        "900": "font_awesome_5_free_900_e29f6f76a4e7fb4fec16e5170a2ca300"
+    }
+}
