@@ -13,7 +13,7 @@
     <div class="d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20">
         <!--begin::Logo-->
         <a href="#" class="mb-12">
-            <img alt="{{$settings?->name}}" src="{{ $logo ?? asset('dashboard/assets/media/logos/logo-demo13-compact.svg') }}" class="h-75px" />
+            <img alt="{{--$settings?->name--}}" src="{{ $logo ?? asset('dashboard/assets/media/logos/logo-demo13-compact.svg') }}" class="h-75px" />
         </a>
         <!--end::Logo-->
 
@@ -53,7 +53,7 @@
                         <label class="form-label fw-bolder text-dark fs-6 mb-0">{{ trans('dashboard/auth.password') }}</label>
                         <!--end::Label-->
                         <!--begin::Link-->
-                        <a href="{{ route('admin.forgot.password') }}" class="link-primary fs-6 fw-bolder">{{ trans('dashboard/auth.forgot_password') }}</a>
+                        <a href="#" class="link-primary fs-6 fw-bolder">{{ trans('dashboard/auth.forgot_password') }}</a>
                         <!--end::Link-->
                     </div>
                     <!--end::Wrapper-->

@@ -9,9 +9,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 //use Laravel\Passport\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Concerns\History\Historyable;
 
 class User extends Authenticatable implements JWTSubject {
-    use HasFactory, /*HasApiTokens,*/ Notifiable;
+    use HasFactory, /*HasApiTokens,*/ Notifiable,Historyable;
     protected $fillable = [
         'name',
         'email',
@@ -19,6 +20,7 @@ class User extends Authenticatable implements JWTSubject {
         'phone',
         'first_name',
         'last_name',
+        'loyalty_points'
     ];
 
     protected $hidden = [

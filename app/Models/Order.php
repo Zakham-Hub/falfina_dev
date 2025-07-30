@@ -12,7 +12,7 @@ use App\Models\Concerns\History\Historyable;
 class Order extends Model
 {
     use HasFactory, Historyable;
-    protected $fillable = ['user_id', 'status', 'total_price', 'branch_id', 'order_location', 'order_number', 'is_delivery', 'payment_type', 'payment_status'];
+    protected $fillable = ['user_id', 'status', 'total_price', 'branch_id', 'order_location', 'order_number', 'is_delivery', 'delivery_fee', 'payment_type', 'payment_status', 'coupon_discount'];
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_product')
@@ -76,8 +76,8 @@ class Order extends Model
         }
         return 'استلام من الفرع';
     }
-
-    public function deliveryType()
+    
+        public function deliveryType()
     {
         return $this->is_delivery ? 'توصيل للعميل' : 'استلام من الفرع';
     }

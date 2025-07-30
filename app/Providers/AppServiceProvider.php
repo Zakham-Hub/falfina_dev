@@ -23,7 +23,6 @@ class AppServiceProvider extends ServiceProvider
         $logo = $settings->getMediaUrl('logo') ?? null;
         $favicon = $settings->getMediaUrl('favicon') ?? null;
         $alarm_audio = $settings->getMediaUrl('alarm_audio') ?? null;
-        //dd($alarm_audio);
         View::share([
             'settings' => $settings,
             'logo' => $logo,

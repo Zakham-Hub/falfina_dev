@@ -10,7 +10,7 @@ class UserProfileResource extends JsonResource {
             'street' => $this->street,
             'city' => $this->city,
             'area' => $this->area,
-            'loyalty_points' => $this->loyalty_points,  
+            'loyalty_points' => $this->owner->loyalty_points,
         ];
     }
 }

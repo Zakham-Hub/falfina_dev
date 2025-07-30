@@ -6,10 +6,8 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class MultiAuthMiddleware
-{
-    public function handle(Request $request, Closure $next): Response
-    {
+class MultiAuthMiddleware {
+    public function handle(Request $request, Closure $next): Response {
         if (check_guard())
             return $next($request);
 

@@ -10,7 +10,7 @@
 
 @section('content')
     @include('dashboard.layouts.common._partial.messages')
-    <div id="kt_content_container" class="container-xxl" style="width: 1500px">
+    <div id="kt_content_container" class="container-xxl" style="width: 100%;">
         <div class="card card-xxl-stretch mb-5 mb-xl-8">
             <!--begin::Header-->
             <div class="card-header border-0 pt-5">

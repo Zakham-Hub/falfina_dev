@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\UploadMedia;
-
+use App\Models\Concerns\History\Historyable;
 class Setting extends Model
 {
-    use HasFactory, UploadMedia;
+    use HasFactory, UploadMedia,Historyable;
     protected $table = 'settings';
     protected $fillable = [
         'name',
@@ -20,6 +20,8 @@ class Setting extends Model
         'currency',
         'loyalty_points',
         'delivery_fees',
+        'delivery_fee_per_km',
+        'delivery_range',
         'version'
     ];
 

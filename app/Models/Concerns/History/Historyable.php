@@ -31,14 +31,6 @@ trait Historyable
 
     /*protected function getWantedChangedColumns(Model $model)
     {
-        return collect(
-            array_diff(Arr::except($model->getChanges(), $this->ignoreHistoryColumns()), $original = $model->getOriginal())
-        )->map(function ($change, $column) use ($original) {
-            return new ColumnChange($column, Arr::get($original, $column), $change);
-        });
-    }*/
-    protected function getWantedChangedColumns(Model $model)
-    {
         $changes = array_diff(
             Arr::except($model->getChanges(), $this->ignoreHistoryColumns()),
             $original = $model->getOriginal()
@@ -53,7 +45,32 @@ trait Historyable
                 $this->castValue($change)
             );
         });
+    }*/
+    protected function getWantedChangedColumns(Model $model)
+    {
+        // نحضّر الـ changes بعد ما نعمل cast للقيم الجديدة
+        $current = collect(Arr::except($model->getChanges(), $this->ignoreHistoryColumns()))
+            ->mapWithKeys(fn($value, $key) => [$key => $this->castValue($value)]);
+    
+        // نحضّر القيم الأصلية مع الكاست أيضًا
+        $original = collect($model->getOriginal())
+            ->mapWithKeys(fn($value, $key) => [$key => $this->castValue($value)]);
+    
+        // نحسب الفروقات بين القيم الحالية والقديمة
+        $changes = $current->diffAssoc($original)->all();
+    
+        // نحول كل تغيير إلى كائن ColumnChange
+        return collect($changes)->map(function ($change, $column) use ($original) {
+            $originalValue = $original[$column] ?? null;
+    
+            return new ColumnChange(
+                $column,
+                $originalValue,
+                $change
+            );
+        });
     }
+
     protected function castValue($value)
     {
         if ($value instanceof \BackedEnum) {
@@ -72,8 +89,13 @@ trait Historyable
         return $this->morphMany(History::class, 'historyable')->latest();
     }
 
-    public function ignoreHistoryColumns()
+    /*public function ignoreHistoryColumns()
     {
         return 'updated_at';
-    }
+    }*/
+    public function ignoreHistoryColumns()
+{
+    return ['updated_at'];
+}
+
 }

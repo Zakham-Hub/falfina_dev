@@ -1,7 +1,7 @@
 @extends('dashboard.layouts.master')
 
 @section('css')
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endsection
 
 @section('pageTitle')
@@ -12,73 +12,86 @@
     @include('dashboard.layouts.common._partial.messages')
     <div id="kt_content_container" class="container-xxl">
         <div class="mb-5 card card-xxl-stretch mb-xl-8">
-            <!--begin::Header-->
             <div class="pt-5 border-0 card-header">
                 <h3 class="card-title align-items-start flex-column">
                     <span class="mb-1 card-label fw-bolder fs-3">{{ $pageTitle }}</span>
-                    <span class="mt-1 text-muted fw-bold fs-7">{{ $pageTitle }} ( )</span>
                 </h3>
             </div>
-            <!--end::Header-->
-            <!--begin::Body-->
+
             <div class="py-3 card-body">
-    <form action="{{ route('admin.coupons.store') }}" method="POST">
-        @csrf
-        <div class="row g-3"> <!-- g-3 adds spacing between columns -->
+                <form action="{{ route('admin.coupons.store') }}" method="POST">
+                    @csrf
+                    <div class="row g-3">
 
-            <div class="col-md-4">
-                <label for="name" class="form-label">الاسم:</label>
-                <input type="text" id="name" name="name" class="form-control" required>
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Coupon Name</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="type" class="form-label">Type</label>
+                            <select id="type" name="type" class="form-control" required>
+                                <option value="">Select Type</option>
+                                <option value="percentage">Percentage</option>
+                                <option value="fixed">Fixed Amount</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="percentage" class="form-label">Value</label>
+                            <input type="number" step="0.01" id="percentage" name="percentage" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="from" class="form-label">Start Date</label>
+                            <input type="date" id="from" name="from" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="to" class="form-label">End Date</label>
+                            <input type="date" id="to" name="to" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="amount" class="form-label">Usage Limit</label>
+                            <input type="number" id="amount" name="amount" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="status" class="form-label">Status</label>
+                            <select id="status" name="status" class="form-control" required>
+                                <option value="active">Active</option>
+                                <option value="not active">Not Active</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="products" class="form-label">Applicable Products (Leave empty for all products)</label>
+                            <select id="products" name="products[]" class="form-control select2" multiple>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Create Coupon</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-
-            <div class="col-md-4">
-                <label for="type" class="form-label">النوع:</label>
-                <input type="text" id="type" name="type" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label for="percentage" class="form-label">النسبة:</label>
-                <input type="text" id="percentage" name="percentage" class="form-control" required
-                    value="{{ $presentage ?? '' }}">
-            </div>
-
-            <div class="col-md-4">
-                <label for="from" class="form-label">من:</label>
-                <input type="date" id="from" name="from" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label for="to" class="form-label">إلى:</label>
-                <input type="date" id="to" name="to" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label for="amount" class="form-label">الكمية:</label>
-                <input type="text" id="amount" name="amount" class="form-control" required>
-            </div>
-
-            <div class="col-md-4">
-                <label for="status" class="form-label">الحالة:</label>
-                <select name="status" class="form-control" required>
-                    <option value="">اختر الحالة</option>
-                    @foreach (\App\Models\Coupon::STATUS as $item)
-                        <option value="{{ $item }}">{{ $item }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-12">
-                <button type="submit" class="btn btn-success w-100 mt-3">💾 حفظ</button>
-            </div>
-
         </div>
-    </form>
-</div>
+    </div>
+@endsection
 
-            <!--begin::Body-->
-        </div>
-    @endsection
-
-    @push('js')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    @endpush
+@section('js')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Select products",
+                allowClear: true
+            });
+        });
+    </script>
+@endsection

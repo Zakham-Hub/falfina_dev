@@ -50,15 +50,29 @@
                         </div>
                     </div>
                     <div class="mt-2 form-group row">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label class="input-group-text text-dark">البريد الالكترونى</label>
                             <input type="email" class="form-control" id="email" name="email"
                                 value="{{ old('email', $setting?->email) }}">
                         </div>
-                        <div class="col-md-6">
-                            <label class="input-group-text text-dark">قيمه التوصيل</label>
+
+                    </div>
+                    <div class="mt-2 form-group row">
+                        <div class="col-md-4">
+                            <label class="input-group-text text-dark">نطاق التوصيل</label>
+                            <input type="text" class="form-control" id="delivery_range" name="delivery_range"
+                                value="{{ old('delivery_range', $setting?->delivery_range) }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="input-group-text text-dark">قيمه التوصيل الأساسية</label>
                             <input type="text" class="form-control" id="delivery_fees" name="delivery_fees"
                                 value="{{ old('delivery_fees', $setting?->delivery_fees) }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="input-group-text text-dark">سعر التوصيل لكل كيلو</label>
+                            <input type="text" class="form-control" id="delivery_fee_per_km" name="delivery_fee_per_km"
+                                value="{{ old('delivery_fee_per_km', $setting?->delivery_fee_per_km) }}">
+                            <small class="text-danger">مثال: 2 ريال لكل كيلو</small>
                         </div>
                     </div>
                     <div class="mt-2 form-group row">
@@ -161,6 +175,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">

@@ -9,10 +9,9 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\{Order, Branch};
+use App\Models\{Order,Branch};
 
-class NewOrderCreated implements ShouldBroadcast
-{
+class NewOrderCreated implements ShouldBroadcast {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $order;
     public function __construct(Order $order)
@@ -20,16 +19,14 @@ class NewOrderCreated implements ShouldBroadcast
         $this->order = $order;
     }
 
-    public function broadcastOn(): array
-    {
+    public function broadcastOn(): array {
         return [
             new PrivateChannel('admins'),
             new PrivateChannel('manager_branch.' . $this->order->branch_id),
         ];
     }
 
-    public function broadcastWith()
-    {
+    public function broadcastWith() {
         $branchName = Branch::whereId($this->order->branch_id)->first()->name;
         return [
             'order_id' => $this->order->id,
@@ -40,8 +37,7 @@ class NewOrderCreated implements ShouldBroadcast
         ];
     }
 
-    public function broadcastAs()
-    {
+    public function broadcastAs() {
         return 'order.created';
     }
 }

@@ -3,6 +3,8 @@
 use App\Http\Controllers\Dashboard\General;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Illuminate\Support\Facades\Artisan;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,12 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/clear-cache', function () {
+    Artisan::call('optimize:clear');
+    return 'Cache Cleared';
+});
+
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'multi_auth']], function () {
     Route::group(['prefix' => 'general', 'as' => 'general.'], function () {

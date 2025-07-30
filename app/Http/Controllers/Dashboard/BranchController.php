@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\DataTables\Dashboard\Admin\BranchDataTable;
+use App\Http\Requests\StoreBranchRequest;
 use App\Models\Branch;
 use App\Services\Contracts\BranchInterface;
 class BranchController extends Controller {
@@ -21,7 +22,7 @@ class BranchController extends Controller {
         return $this->branchInterface->create();
     }
 
-    public function store(Request $request) {
+    public function store(StoreBranchRequest $request) {
         return $this->branchInterface->store($request);
     }
 
@@ -30,7 +31,7 @@ class BranchController extends Controller {
         return $this->branchInterface->edit($id);
     }
 
-    public function update(Request $request, $id)
+    public function update(StoreBranchRequest $request, $id)
     {
         return $this->branchInterface->update($request, $id);
     }

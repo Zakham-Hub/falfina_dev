@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
-use App\Models\{Order, OrderProductDetail, OrderProductExtra, Product};
+use App\Models\{Order, OrderProductDetail, OrderProductExtra, Product, Setting, Coupon};
 use App\Traits\ApiTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,6 +15,7 @@ class OrderController extends Controller
     use ApiTrait;
     public function store(Request $request)
     {
+
         try {
             $order = DB::transaction(function () use ($request) {
                 $user = auth()->user();
@@ -27,9 +28,11 @@ class OrderController extends Controller
                     'status' => 'pending',
                     'order_location' => $request->order_location,
                     'is_delivery' => $request->is_delivery ?? 0,
+                    'delivery_fee' => $request->delivery_fee,
                     'total_price' => 0
                 ]);
                 $totalPrice = 0;
+                $couponDiscount = 0;
                 foreach ($request->products as $productData) {
                     $product = Product::findOrFail($productData['product_id']);
                     $order->products()->attach($product->id, [
@@ -46,7 +49,7 @@ class OrderController extends Controller
                         'size_price' => $productData['size_price'] ?? 0,
                         'type_price' => $productData['type_price'] ?? 0,
                     ]);
-                    $totalPrice += ($product->price + $detail->size_price + $detail->type_price) * $productData['quantity'];
+                    $totalPrice += ($detail->size_price + $detail->type_price) * $productData['quantity'];
                     if (!empty($productData['extras'])) {
                         foreach ($productData['extras'] as $extra) {
                             OrderProductExtra::create([
@@ -59,7 +62,33 @@ class OrderController extends Controller
                         }
                     }
                 }
-                $order->update(['total_price' => $totalPrice]);
+                $setting = Setting::first();
+                $loyaltyPointsToAdd = $totalPrice * $setting->loyalty_points;
+                if ($loyaltyPointsToAdd > 0) {
+                    $user = auth()->user();
+                    $user->loyalty_points += $loyaltyPointsToAdd;
+                    $user->save();
+                }
+                $delivery_fee = $request->delivery_fee ?? 0;
+                $totalPrice += $request->delivery_fee;
+
+                if ($request->has('coupon_id') && $request->coupon_id) {
+                    $coupon = Coupon::where('id', $request->coupon_id)->where('status', 'active')->where('from', '<=', now())->where('to', '>=', now())->first();
+                    if ($coupon) {
+
+                        if ($coupon->percentage != null) {
+                            $couponDiscount = ($totalPrice * $coupon->percentage) / 100;
+                        } else {
+                            $couponDiscount = min($coupon->amount, $totalPrice);
+                        }
+                    }
+                }
+
+                $totalPrice -= $couponDiscount;
+                $order->update([
+                    'total_price' => max(0, $totalPrice),
+                    'coupon_discount' => $couponDiscount
+                ]);
                 $order->load('products', 'details');
                 return $order;
             });
@@ -86,5 +115,10 @@ class OrderController extends Controller
     {
         $orders = Order::with(['products', 'details', 'extras'])->where('user_id', $id)->get();
         return OrderResource::collection($orders);
+    }
+
+    protected function calculateLoyaltyPoints($totalPrice)
+    {
+        return floor($totalPrice / 10);
     }
 }

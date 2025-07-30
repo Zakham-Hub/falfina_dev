@@ -11,6 +11,7 @@
 @section('content')
     @include('dashboard.layouts.common._partial.messages')
     <div id="kt_content_container" class="container-xxl">
+        
         <div class="mb-5 card card-xxl-stretch mb-xl-8">
             <!--begin::Header-->
             <div class="pt-5 border-0 card-header">
@@ -26,7 +27,10 @@
                                 <rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="black" />
                             </svg>
                         </span>
-                        <!--end::Svg Icon-->اضافه طلب جديد</a>
+                        <!--end::Svg Icon-->اضافه طلب جديد
+                        
+                        
+                        </a>
                     </div>
             </div>
             <!--end::Header-->

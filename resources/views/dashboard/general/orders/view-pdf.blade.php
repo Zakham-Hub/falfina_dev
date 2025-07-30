@@ -56,6 +56,7 @@
                     <p><strong>حالة الدفع:</strong> {{ ucfirst($order->payment_status) }}</p>
                     <p><strong>موقع الطلب:</strong> {{ $order->order_location }}</p>
                     <p><strong>التوصيل:</strong> {{ $order->is_delivery ? 'نعم' : 'لا' }}</p>
+                    <p><strong>سعرالتوصيل</strong> {{ $number_format($order->delivery_free ?? )}} SAR </p>
                     <p><strong>السعر الإجمالي:</strong> {{ number_format($order->total_price, 2) }} SAR</p>
                 </div>
 
@@ -167,6 +168,7 @@
                     <p><strong>حالة الدفع:</strong> {{ ucfirst($order->payment_status) }}</p>
                     <p><strong>موقع الطلب:</strong> {{ $order->order_location }}</p>
                     <p><strong>التوصيل:</strong> {{ $order->is_delivery ? 'نعم' : 'لا' }}</p>
+                    <p><strong>سعرالتوصيل</strong> {{ $number_format($setting->delivery_fee ?? )}} SAR </p>
                     <p><strong>السعر الإجمالي:</strong> {{ number_format($order->total_price, 2) }} SAR</p>
                 </div>
 

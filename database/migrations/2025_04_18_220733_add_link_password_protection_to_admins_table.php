@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('admins', function (Blueprint $table) {
-            $table->boolean('link_password_status')->default(0)->after('password');
-            $table->string('link_password_protection')->nullable()->after('link_password_status');
+            if(!Schema::hasColumn('admins', 'link_password_status')) {
+                $table->boolean('link_password_status')->default(0)->after('password');
+            }
+            if(!Schema::hasColumn('admins', 'link_password_protection')) {
+                $table->string('link_password_protection')->nullable()->after('link_password_status');
+            }
         });
     }
 

@@ -17,26 +17,20 @@ class BranchController extends Controller
     {
         try {
 
-            $branches = Branch::active()
+                $branches = Branch::active()
+                ->with([
+                    'dailySchedules.shifts',
+                    'exceptionalHolidays',
+                    'specialOccasions',
+                ])
                 ->orderByDesc('created_at')
-                ->paginate(10);
-
-            // $groupedBranches = collect($branches->items())
-            //     ->groupBy('type')
-            //     ->mapWithKeys(fn($items, $key) => [$key => BranchResource::collection($items)]);
-            $groupedBranches = collect($branches->items())
-                ->groupBy(fn($branch) => $branch->type ?: 'data') // Default to 'unknown' for empty or null types
-                ->mapWithKeys(fn($items, $key) => [$key => BranchResource::collection($items)]);
+                ->get();
 
             return $this->successResponse([
-                'branches'   => $groupedBranches,
-                'pagination' => [
-                    'total'         => $branches->total(),
-                    'per_page'      => $branches->perPage(),
-                    'current_page'  => $branches->currentPage(),
-                    'last_page'     => $branches->lastPage(),
-                ],
+                'branches' => BranchResource::collection($branches),
+                'count' => $branches->count(),
             ], 'Branches retrieved successfully.', 200);
+
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to retrieve Branches.', 500, $e->getMessage());
         }

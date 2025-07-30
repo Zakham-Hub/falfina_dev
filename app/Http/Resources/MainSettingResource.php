@@ -16,6 +16,8 @@ class MainSettingResource extends JsonResource
             'phone' => $this->phone,
             'description' => $this->description,
             'delivery_fees' => $this->delivery_fees,
+            'delivery_fee_per_km' => $this->delivery_fee_per_km,
+            'delivery_range' => $this->delivery_range,
             'logo' => $this->getMediaUrl('logo'),
             'key' => $this->key,
         ];

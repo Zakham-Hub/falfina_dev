@@ -1,9 +1,10 @@
 <?php
 
-namespace  App\Repositories;
+namespace App\Repositories;
 
 use App\DataTables\Dashboard\Admin\CouponDataTable;
 use App\Models\Coupon;
+use App\Models\Product;
 use App\Services\Contracts\CouponInterface;
 use Illuminate\Http\Request;
 
@@ -11,66 +12,88 @@ class CouponRepository implements CouponInterface
 {
     public function index(CouponDataTable $couponDataTable)
     {
-        return $couponDataTable->render('dashboard.admin.coupons.index', ['pageTitle' => 'coupons']);
+        $products = Product::get();
+        return $couponDataTable->render('dashboard.admin.coupons.index', [
+            'pageTitle' => 'Coupons',
+            'products' => $products
+        ]);
     }
 
     public function create()
     {
-        return view('dashboard.admin.coupons.create', ['pageTitle' => 'coupons']);
+        $products = Product::get();
+        return view('dashboard.admin.coupons.create', [
+            'pageTitle' => 'Create Coupon',
+            'products' => $products
+        ]);
     }
 
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|max:255',
-            'from' => 'required|date|max:255',
-            'to' => 'required|date|max:255',
-            'amount' => 'required|string|max:255',
-            'status' => 'required|string|max:255',
-            'percentage' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:coupons,name',
+            'type' => 'required|in:percentage,fixed',
+            'percentage' => 'required|numeric|min:0',
+            'from' => 'required|date',
+            'to' => 'required|date|after:from',
+            'amount' => 'required|integer|min:1',
+            'status' => 'required|in:active,not active',
+            'products' => 'nullable|array',
+            'products.*' => 'exists:products,id'
         ]);
-        if ($request->from < date("Y-m-d")) {
-            return back()->withErrors(['from' => 'تاريخ البداية يجب أن يكون بعد تاريخ اليوم.'])->withInput();
+
+        $coupon = Coupon::create($request->only([
+            'name', 'type', 'percentage', 'from', 'to', 'amount', 'status'
+        ]));
+
+        if ($request->has('products')) {
+            $coupon->products()->sync($request->products);
         }
-        if ($request->from > $request->to) {
-            return back()->withErrors(['from' => 'تاريخ البداية يجب أن يكون قبل تاريخ النهاية.'])->withInput();
-        }
-        Coupon::create($request->all());
-        return redirect()->route('admin.coupons.index')->with('success', 'تم حفظ بنجاح!');
+
+        return redirect()->route('admin.coupons.index')
+            ->with('success', 'Coupon created successfully');
     }
 
     public function edit(Coupon $coupon)
     {
-        return view('dashboard.admin.coupons.edit', ['pageTitle' => 'تعديل كوبون', 'coupon' => $coupon]);
+        $products = Product::get();
+        return view('dashboard.admin.coupons.edit', [
+            'pageTitle' => 'Edit Coupon',
+            'coupon' => $coupon,
+            'products' => $products
+        ]);
     }
 
     public function update(Request $request, Coupon $coupon)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|max:255',
-            'from' => 'required|date|max:255',
-            'to' => 'required|date|max:255',
-            'amount' => 'required|string|max:255',
-            'status' => 'required|string|max:255',
-            'percentage' => 'required|string|max:255',
-
+            'name' => 'required|string|max:255|unique:coupons,name,'.$coupon->id,
+            'type' => 'required|in:percentage,fixed',
+            'percentage' => 'required|numeric|min:0',
+            'from' => 'required|date',
+            'to' => 'required|date|after:from',
+            'amount' => 'required|integer|min:1',
+            'status' => 'required|in:active,not active',
+            'products' => 'nullable|array',
+            'products.*' => 'exists:products,id'
         ]);
-        if ($request->from < date("Y-m-d")) {
-            return back()->withErrors(['from' => 'تاريخ البداية يجب أن يكون بعد تاريخ اليوم.'])->withInput();
-        }
-        if ($request->from > $request->to) {
-            return back()->withErrors(['from' => 'تاريخ البداية يجب أن يكون قبل تاريخ النهاية.'])->withInput();
-        }
-        $coupon->update($request->all());
-        return redirect()->route('admin.coupons.index')->with('success', 'تم حفظ بنجاح!');
+
+        $coupon->update($request->only([
+            'name', 'type', 'percentage', 'from', 'to', 'amount', 'status'
+        ]));
+
+        $coupon->products()->sync($request->products ?? []);
+
+        return redirect()->route('admin.coupons.index')
+            ->with('success', 'Coupon updated successfully');
     }
 
     public function destroy(Coupon $coupon)
     {
+        $coupon->products()->detach();
         $coupon->delete();
-        return redirect()->route('admin.coupons.index')->with('success', 'تم الحذف بنجاح!');
+
+        return redirect()->route('admin.coupons.index')
+            ->with('success', 'Coupon deleted successfully');
     }
 }

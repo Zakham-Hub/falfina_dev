@@ -85,6 +85,7 @@ class OrderRepository implements OrderInterface
         ];
         $pdf = Pdf::loadView('dashboard.layouts.invoice', compact('order', 'data'));
         return $pdf->download('invoice_' . $order->order_number . '.pdf');
+        //return view('dashboard.layouts.invoice', compact('order', 'data'));
     }
     /*public function viewPdf(Order $order) {
             $order = Order::with(['products', 'details', 'extras'])->findOrFail($order->id);
@@ -256,16 +257,31 @@ class OrderRepository implements OrderInterface
         return redirect()->route('general.orders.index')->with('success', 'تم الحذف بنجاح!');
     }
 
-    public function updateStatus(Request $request, Order $order) {
+  public function updateStatus(Request $request, Order $order) {
         $validated = $request->validate([
             'status' => ['required', Rule::in(array_column(OrderStatus::cases(), 'value'))],
         ]);
+
+        if ($validated['status'] === OrderStatus::CANCELED->value && $order->status !== OrderStatus::CANCELED->value) {
+            $this->deductLoyaltyPointsForCanceledOrder($order);
+        }
+
         $order->status = $validated['status'];
         $order->save();
+
         $statusEnum = OrderStatus::from($validated['status']);
         return [
             'badgeColor' => $statusEnum->badgeColor(),
             'label' => $statusEnum->label(),
         ];
     }
+
+    protected function deductLoyaltyPointsForCanceledOrder(Order $order) {
+        $setting = Setting::first();
+        $user = $order->user;
+        $pointsToDeduct = $order->total_price * $setting->loyalty_points;
+        $newPoints = max(0, $user->loyalty_points - $pointsToDeduct);
+        $user->update(['loyalty_points' => $newPoints]);
+    }
+
 }

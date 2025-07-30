@@ -17,7 +17,7 @@
         <div class="card-body">
             <form id="filter-form" class="row mb-4">
                 <div class="col-md-3">
-                    <label>من تاريخ</label>
+                    <label>من 2 تاريخ</label>
                     <input type="date" name="from" id="from" class="form-control">
                 </div>
                 <div class="col-md-3">

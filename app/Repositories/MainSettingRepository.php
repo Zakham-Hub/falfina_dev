@@ -42,6 +42,8 @@ class MainSettingRepository implements MainSettingInterface
                 'currency',
                 'loyalty_points',
                 'delivery_fees',
+                'delivery_fee_per_km',
+                'delivery_range',
                 'version'
             ]));
             $setting->save();

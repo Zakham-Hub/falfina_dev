@@ -6,10 +6,10 @@ use App\Models\Concerns\UploadMedia;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Models\Concerns\History\Historyable;
 class Package extends Model
 {
-    use HasFactory, UploadMedia;
+    use HasFactory, UploadMedia,Historyable;
     protected $table = 'packages';
     protected $guarded = [];
     public function products()

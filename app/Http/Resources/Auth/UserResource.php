@@ -14,6 +14,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'type'=>"User",
+            'loyalty_points' => $this->loyalty_points,
             'profile' => new Profile\UserProfileResource($this->whenLoaded('profile')),
         ];
     }

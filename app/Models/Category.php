@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\UploadMedia;
+use App\Models\Concerns\History\Historyable;
 class Category extends Model {
-    use HasFactory, UploadMedia;
+    use HasFactory, UploadMedia, Historyable;
     protected $table = 'categories';
     protected $fillable = ['name', 'parent_id', 'status', 'description', 'short_description'];
     protected $appends = ['status_text'];

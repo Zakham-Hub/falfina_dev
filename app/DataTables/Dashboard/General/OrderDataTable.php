@@ -75,8 +75,23 @@ class   OrderDataTable extends BaseDataTable
                 ';
             })
             ->editColumn('payment_status', function (Order $order) {
-                return '<span class="badge">' . $order?->payment_status . '</span>';
+                $status = (int) $order->payment_status;
+            
+                $label = match ($status) {
+                    1 => 'تم الدفع',
+                    0 => 'الدفع عند الإستلام',
+                    default => 'لم يُحدد',
+                };
+            
+                $badgeClass = match ($status) {
+                    1 => 'bg-success',
+                    0 => 'bg-danger',
+                    default => 'bg-secondary',
+                };
+            
+                return '<span class="badge ' . $badgeClass . '">' . $label . '</span>';
             })
+
             ->editColumn('payment_type', function (Order $order) {
                 return  $order?->payment_type?->label();
             })
@@ -109,7 +124,7 @@ class   OrderDataTable extends BaseDataTable
             ['name' => 'order_number', 'data' => 'order_number', 'title' => 'رقم الطلب'],
             ['name' => 'price', 'data' => 'price', 'title' => 'السعر', 'orderable' => true, 'searchable' => true],
             ['name' => 'product_count_quantity', 'data' => 'product_count_quantity', 'title' => 'الكميه', 'orderable' => true, 'searchable' => true],
-            ['name' => 'order_products_count', 'data' => 'order_products_count', 'title' => 'عدد المنتاجات', 'orderable' => false, 'searchable' => false],
+            ['name' => 'order_products_count', 'data' => 'order_products_count', 'title' => 'عدد المنتجات', 'orderable' => false, 'searchable' => false],
             ['name' => 'user_id', 'data' => 'user_id', 'title' => 'العميل', 'orderable' => false, 'searchable' => false],
             ['name' => 'phone', 'data' => 'phone', 'title' => 'الهاتف', 'orderable' => false, 'searchable' => false],
             ['name' => 'status', 'data' => 'status', 'title' => 'حاله الطلب', 'orderable' => false, 'searchable' => false],

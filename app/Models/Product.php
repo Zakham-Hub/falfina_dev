@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concerns\UploadMedia;
+use App\Models\Concerns\History\Historyable;
 class Product extends Model {
-    use HasFactory, UploadMedia;
+    use HasFactory, UploadMedia,Historyable;
     protected $fillable = ['name', 'alt_name', 'description', 'short_description','price', 'loyalty_points'];
 
     public function categories() {

@@ -33,6 +33,12 @@ Route::prefix('v1')->group(function () {
             Route::post('logout', [Auth\AuthController::class, 'logout']);
             Route::post('me', [Auth\AuthController::class, 'me']);
         });*/
+
+        // OTP Routes
+        Route::post('login-with-otp', [Auth\OtpController::class, 'loginWithOtp']);
+        Route::post('send-otp', [Auth\OtpController::class, 'sendOtp']);
+        Route::post('verify-otp', [Auth\OtpController::class, 'verifyOtp']);
+        Route::post('resend-otp', [Auth\OtpController::class, 'resendOtp']);
     });
     Route::middleware(['auth:user-api'])->prefix('orders')->group(function () {
         Route::post('create', [Api\OrderController::class, 'store']);

@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Concerns\History\Historyable;
 class Admin extends Authenticatable implements JWTSubject {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Historyable;
     protected $table = 'admins';
     protected $fillable = ['name', 'email', 'password', 'phone', 'status', 'type','link_password_status','link_password_protection'];
     protected $hidden = ['password', 'remember_token'];

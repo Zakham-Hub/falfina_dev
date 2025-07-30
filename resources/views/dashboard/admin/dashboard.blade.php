@@ -11,7 +11,7 @@
 @section('content')
 @include('dashboard.layouts.common._partial.messages')
 
-<div id="kt_content_container" class="container-xxl" style="width: 1500px; direction: rtl;">
+<div id="kt_content_container" class="container-xxl" style="width: 100%; direction: rtl;">
     <div class="card card-xxl-stretch mb-5 mb-xl-8">
         <div class="card-header border-0 pt-5">
             <h3 class="card-title align-items-start flex-column">
