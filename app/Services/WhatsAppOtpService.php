@@ -34,8 +34,8 @@ class WhatsAppOtpService
             $this->cleanupOldOtps($user);
             // Generate new OTP
             $otpCode = UserOtp::generateOtpCode();
-            $expiresAt = Carbon::now()->addMinutes(5); // 5 minutes expiry
-            
+            $expiresAt = Carbon::now()->addMinutes(5);
+            // dd($expiresAt);
             // Save OTP to database
             $userOtp = UserOtp::create([
                 'user_id' => $user->id,
@@ -61,7 +61,7 @@ class WhatsAppOtpService
                 return [
                     'success' => true,
                     'message' => 'تم إرسال رمز التحقق عبر الواتساب',
-                    'expires_at' => $expiresAt->toISOString(),
+                    'expires_at' => $userOtp->expires_at->toIso8601String(),
                     'otp_id' => $userOtp->id
                 ];
             } else {

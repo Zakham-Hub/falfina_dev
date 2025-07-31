@@ -15,34 +15,53 @@ class AuthController extends Controller
 {
     use ApiTrait;
     protected $authService;
-    public function __construct(MultiAuthService $authService)
+    protected $otpService;
+    public function __construct(MultiAuthService $authService, \App\Services\WhatsAppOtpService $otpService)
     {
         $this->authService = $authService;
+        $this->otpService = $otpService;
     }
 
     public function login(Request $request)
     {
-        //dd($rrquest->all());
-        $credentials = $request->only(['email', 'password']);
-        $type = $request->input('type');
-        $response = $this->authService->login($credentials, $type);
-        if (isset($response['error'])) {
-            return $this->errorResponse('Unauthorized', 401);
+        $messages = [
+            'phone.required' => 'رقم الهاتف مطلوب.',
+            'password.required' => 'كلمة المرور مطلوبة.',
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string',
+            'password' => 'required|string',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->errors()->first(), 422);
         }
+
+        $credentials = $request->only(['phone', 'password']);
+        $type = $request->input('type', 'user');
+        $response = $this->authService->login($credentials, $type);
+
+        if (isset($response['error'])) {
+            return $this->errorResponse('رقم الهاتف أو كلمة المرور غير صحيحة', 401);
+        }
+
         $guard = $type === 'admin' ? 'admin-api' : 'user-api';
         $user = auth($guard)->user();
+
         if (!$user) {
-            return $this->notFoundResponse('User not found');
+            return $this->notFoundResponse('المستخدم غير موجود');
         }
+
         $user->load('profile');
         $resource = $guard === 'admin-api' ? new Auth\AdminResource($user) : new Auth\UserResource($user);
-        $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user); // create a refresh token
+        $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
 
         return $this->successResponse([
             'token' => $response['token'],
             'refresh_token' => $refreshToken,
             'user' => $resource
-        ], "$type Login successful");
+        ], 'تم تسجيل الدخول بنجاح');
     }
 
     public function logout(Request $request)
@@ -146,10 +165,18 @@ class AuthController extends Controller
             DB::commit();
             $user->load('profile');
             $token = auth('user-api')->login($user);
+            // Send OTP after registration
+            $otpResult = $this->otpService->sendOtp($user);
+            $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
             return $this->successResponse([
                 'token' => $token,
-                'user' => new Auth\UserResource($user)
-            ], "$user->first_name registered successfully");
+                'refresh_token' => $refreshToken,
+                'user' => new Auth\UserResource($user),
+                'otp' => [
+                    'expires_at' => $otpResult['expires_at'] ?? null,
+                    'requires_otp' => true,
+                ]
+            ], isset($otpResult['message']) ? $otpResult['message'] : "$user->first_name registered successfully");
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

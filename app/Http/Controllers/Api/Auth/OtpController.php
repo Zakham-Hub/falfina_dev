@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\UserOtp;
 
 class OtpController extends Controller
 {
@@ -92,7 +93,7 @@ class OtpController extends Controller
             // Generate JWT token after successful verification
             $token = JWTAuth::fromUser($user);
             $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
-            
+
             $user->load('profile');
 
             return $this->successResponse([
@@ -145,16 +146,17 @@ class OtpController extends Controller
     /**
      * Login with phone and password, then send OTP
      */
-    public function loginWithOtp(Request $request)
+    public function registerVerifyOtp(Request $request)
     {
         $messages = [
             'phone.required' => 'رقم الهاتف مطلوب.',
-            'password.required' => 'كلمة المرور مطلوبة.',
+            'token.required' => 'رمز التحقق مطلوب.',
+            'token.digits' => 'رمز التحقق يجب أن يكون 6 أرقام.',
         ];
 
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|string',
-            'password' => 'required|string'
+            'phone' => 'required|string|exists:users,phone',
+            'token' => 'required|string|digits:6'
         ], $messages);
 
         if ($validator->fails()) {
@@ -165,27 +167,40 @@ class OtpController extends Controller
         $user = User::where('phone', $request->phone)->first();
 
         if (!$user) {
-            return $this->errorResponse('رقم الهاتف أو كلمة المرور غير صحيحة', 401);
+            return $this->errorResponse('رقم الهاتف غير صحيح', 401);
         }
 
-        // Verify password
-        if (!\Hash::check($request->password, $user->password)) {
-            return $this->errorResponse('رقم الهاتف أو كلمة المرور غير صحيحة', 401);
+        // Verify OTP code
+        $userOtp = UserOtp::where('user_id', $user->id)
+            ->where('otp_code', $request->token)
+            ->where('is_verified', false)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$userOtp) {
+            return $this->errorResponse('رمز التحقق غير صحيح', 401);
         }
 
-        // Send OTP for verification
-        $result = $this->otpService->sendOtp($user);
-
-        if ($result['success']) {
-            return $this->successResponse([
-                'user_id' => $user->id,
-                'phone' => $this->maskPhoneNumber($user->phone),
-                'expires_at' => $result['expires_at'],
-                'requires_otp' => true
-            ], 'تم إرسال رمز التحقق. يرجى إدخال الرمز للمتابعة.');
+        if ($userOtp->created_at->lt(now()->subMinutes(5))) {
+            // Delete OTP and user if expired
+            $userOtp->delete();
+            $user->delete();
+            return $this->errorResponse('انتهت صلاحية رمز التحقق. يرجى التسجيل مرة أخرى.', 410);
         }
 
-        return $this->errorResponse($result['message'], 400);
+        // Mark OTP as verified
+        $userOtp->is_verified = true;
+        $userOtp->save();
+
+        // Generate new JWT token
+        $token = JWTAuth::fromUser($user);
+
+        return $this->successResponse([
+            'user_id' => $user->id,
+            'phone' => $this->maskPhoneNumber($user->phone),
+            'token' => $token,
+            'verified' => true
+        ], 'تم التحقق من رقم الهاتف بنجاح');
     }
 
     /**

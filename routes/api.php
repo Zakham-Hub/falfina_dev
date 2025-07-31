@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\Api\Auth;
-use App\Http\Controllers\Api\ProductController;
 use App\Models\Item;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api;
+use App\Http\Controllers\Api\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ProductController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,6 +25,11 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('login', [Auth\AuthController::class, 'login']);
         Route::post('register', [Auth\AuthController::class, 'register']);
+                // OTP Routes
+        Route::post('register-verify-otp', [Auth\OtpController::class, 'registerVerifyOtp']);
+        // Route::post('send-otp', [Auth\OtpController::class, 'sendOtp']);
+        // Route::post('verify-otp', [Auth\OtpController::class, 'verifyOtp']);
+        // Route::post('resend-otp', [Auth\OtpController::class, 'resendOtp']);
         Route::middleware(['auth:user-api'])->group(function () {
             Route::post('logout', [Auth\AuthController::class, 'logout']);
             Route::post('me', [Auth\AuthController::class, 'me']);
@@ -33,12 +40,6 @@ Route::prefix('v1')->group(function () {
             Route::post('logout', [Auth\AuthController::class, 'logout']);
             Route::post('me', [Auth\AuthController::class, 'me']);
         });*/
-
-        // OTP Routes
-        Route::post('login-with-otp', [Auth\OtpController::class, 'loginWithOtp']);
-        Route::post('send-otp', [Auth\OtpController::class, 'sendOtp']);
-        Route::post('verify-otp', [Auth\OtpController::class, 'verifyOtp']);
-        Route::post('resend-otp', [Auth\OtpController::class, 'resendOtp']);
     });
     Route::middleware(['auth:user-api'])->prefix('orders')->group(function () {
         Route::post('create', [Api\OrderController::class, 'store']);
