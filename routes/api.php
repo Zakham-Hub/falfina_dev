@@ -20,9 +20,9 @@ use App\Http\Controllers\Api\ProductController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::post('/forgot-password', [Auth\PasswordResetController::class, 'forgotPassword']);
-    Route::post('/reset-password', [Auth\PasswordResetController::class, 'resetPassword']);
     Route::prefix('auth')->group(function () {
+        Route::post('/reset-password', [Auth\PasswordResetController::class, 'resetPassword']);
+        Route::post('/forgot-password', [Auth\PasswordResetController::class, 'forgotPassword']);
         Route::post('login', [Auth\AuthController::class, 'login']);
         Route::post('register', [Auth\AuthController::class, 'register']);
                 // OTP Routes

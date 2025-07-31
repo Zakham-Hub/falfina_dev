@@ -150,13 +150,13 @@ class OtpController extends Controller
     {
         $messages = [
             'phone.required' => 'رقم الهاتف مطلوب.',
-            'token.required' => 'رمز التحقق مطلوب.',
+            'otp_code.required' => 'رمز التحقق مطلوب.',
             'token.digits' => 'رمز التحقق يجب أن يكون 6 أرقام.',
         ];
 
         $validator = Validator::make($request->all(), [
             'phone' => 'required|string|exists:users,phone',
-            'token' => 'required|string|digits:6'
+            'otp_code' => 'required|string|digits:6'
         ], $messages);
 
         if ($validator->fails()) {
@@ -172,7 +172,7 @@ class OtpController extends Controller
 
         // Verify OTP code
         $userOtp = UserOtp::where('user_id', $user->id)
-            ->where('otp_code', $request->token)
+            ->where('otp_code', $request->otp_code)
             ->where('is_verified', false)
             ->orderByDesc('created_at')
             ->first();
@@ -194,11 +194,12 @@ class OtpController extends Controller
 
         // Generate new JWT token
         $token = JWTAuth::fromUser($user);
-
+        $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
         return $this->successResponse([
             'user_id' => $user->id,
             'phone' => $this->maskPhoneNumber($user->phone),
             'token' => $token,
+            'refresh_token' => $refreshToken,
             'verified' => true
         ], 'تم التحقق من رقم الهاتف بنجاح');
     }

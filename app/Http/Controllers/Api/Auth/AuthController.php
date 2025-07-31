@@ -164,18 +164,12 @@ class AuthController extends Controller
             ]);
             DB::commit();
             $user->load('profile');
-            $token = auth('user-api')->login($user);
+
             // Send OTP after registration
             $otpResult = $this->otpService->sendOtp($user);
-            $refreshToken = JWTAuth::claims(['refresh' => true])->fromUser($user);
             return $this->successResponse([
-                'token' => $token,
-                'refresh_token' => $refreshToken,
-                'user' => new Auth\UserResource($user),
-                'otp' => [
                     'expires_at' => $otpResult['expires_at'] ?? null,
                     'requires_otp' => true,
-                ]
             ], isset($otpResult['message']) ? $otpResult['message'] : "$user->first_name registered successfully");
         } catch (\Exception $e) {
             DB::rollBack();
