@@ -10,7 +10,11 @@ use App\Models\Product;
 class ProductController extends Controller {
     use ApiTrait;
     public function index(Request $request) {
-        $products = Product::with(['categories', 'sizes', 'types', 'extras', 'media'])->paginate(20);
+        if($request->has('per_page')) {
+            $products = Product::with(['categories', 'sizes', 'types', 'extras', 'media'])->paginate($request->per_page, ['*']);
+        } else {
+            $products = Product::with(['categories', 'sizes', 'types', 'extras', 'media'])->paginate(20);
+        }
         return $this->successResponse($products, 'Products retrieved successfully', 200, ProductResource::class);
     }
 }

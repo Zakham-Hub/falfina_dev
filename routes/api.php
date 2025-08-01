@@ -25,7 +25,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/forgot-password', [Auth\PasswordResetController::class, 'forgotPassword']);
         Route::post('login', [Auth\AuthController::class, 'login']);
         Route::post('register', [Auth\AuthController::class, 'register']);
-                // OTP Routes
         Route::post('register-verify-otp', [Auth\OtpController::class, 'registerVerifyOtp']);
         // Route::post('send-otp', [Auth\OtpController::class, 'sendOtp']);
         // Route::post('verify-otp', [Auth\OtpController::class, 'verifyOtp']);
