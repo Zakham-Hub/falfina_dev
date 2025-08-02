@@ -35,16 +35,13 @@ Route::prefix('v1')->group(function () {
             Route::put('profile/update', [Auth\AuthController::class, 'updateProfile']);
         });
 
-        /*Route::middleware(['auth:admin-api'])->group(function () {
-            Route::post('logout', [Auth\AuthController::class, 'logout']);
-            Route::post('me', [Auth\AuthController::class, 'me']);
-        });*/
     });
     Route::middleware(['auth:user-api'])->prefix('orders')->group(function () {
         Route::post('create', [Api\OrderController::class, 'store']);
         Route::post('show', [Api\OrderController::class, 'show']);
         Route::get('user/{id}', [Api\OrderController::class, 'getUserOrders']);
     });
+    Route::delete('user/delete/{id}', [Api\UserController::class, 'destroy'])->middleware('auth:user-api');
     Route::get('user/{id}', [Api\OrderController::class, 'getUserOrders']);
 
     Route::prefix('settings')->group(function () {
