@@ -56,6 +56,10 @@ return [
             'driver' => 'jwt',
             'provider' => 'admins',
         ],
+        'manager-api' => [
+            'driver' => 'jwt',
+            'provider' => 'managers',
+        ],
     ],
 
     /*
@@ -98,6 +102,10 @@ return [
         'admins-api' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+        'managers-api' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Manager::class,
         ],
     ],
 

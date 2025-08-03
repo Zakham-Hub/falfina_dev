@@ -43,6 +43,7 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+
         ],
     ];
 
@@ -74,5 +75,6 @@ class Kernel extends HttpKernel
 
         'multi_auth' => \App\Http\Middleware\MultiAuthMiddleware::class,
         'linkPasswordProtected' => \App\Http\Middleware\linkPasswordProtected::class,
+        'cashier_auth' => \App\Http\Middleware\CashierGuardAuth::class,
     ];
 }
