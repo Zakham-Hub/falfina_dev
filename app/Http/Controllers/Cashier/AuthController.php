@@ -79,4 +79,39 @@ class AuthController extends Controller
             'user' => $resource
         ], 'Login successful');
     }
+        /**
+     * Logout the authenticated user (admin or manager) based on token.
+     */
+    public function logout(Request $request)
+    {
+        $token = $request->bearerToken();
+        if (!$token) {
+            return $this->errorResponse('Token not provided', 400);
+        }
+
+        // Try to authenticate as admin
+        try {
+            $admin = \Tymon\JWTAuth\Facades\JWTAuth::setToken($token)->toUser();
+            if ($admin && get_class($admin) === 'App\\Models\\Admin') {
+                \Tymon\JWTAuth\Facades\JWTAuth::setToken($token)->invalidate();
+                return $this->successResponse([], 'Admin logged out successfully');
+            }
+        } catch (\Exception $e) {
+            // Ignore and try manager
+        }
+
+        // Try to authenticate as manager
+        try {
+            $manager = \Tymon\JWTAuth\Facades\JWTAuth::setToken($token)->toUser();
+            if ($manager && get_class($manager) === 'App\\Models\\Manager') {
+                \Tymon\JWTAuth\Facades\JWTAuth::setToken($token)->invalidate();
+                return $this->successResponse([], 'Manager logged out successfully');
+            }
+        } catch (\Exception $e) {
+            // Ignore
+        }
+
+        return $this->errorResponse('Invalid token or user not found', 401);
+    }
+
 }

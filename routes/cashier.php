@@ -24,6 +24,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::post('admin/login', 'adminLogin');
         Route::post('manager/login' ,'managerLogin');
+        Route::post('logout' ,'logout')->middleware(['cashier_auth']);
       });
       Route::middleware(['cashier_auth'])->group(function () {
         Route::prefix('products')->group(function () {
