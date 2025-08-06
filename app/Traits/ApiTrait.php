@@ -24,11 +24,14 @@ trait ApiTrait {
             $data = $resource::collection($data);
         }
 
-        return response()->json([
+        $response = [
             'status' => 'success',
             'message' => $message,
-            'data' => $data,
-        ], $statusCode);
+        ];
+        if (!is_null($data)) {
+            $response['data'] = $data;
+        }
+        return response()->json($response, $statusCode);
     }
 
     protected function errorResponse(string $message = 'Error', int $statusCode = 400, $errors = null)

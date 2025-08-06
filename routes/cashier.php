@@ -30,8 +30,15 @@ Route::prefix('v1')->group(function () {
         Route::prefix('products')->group(function () {
             Route::post('/', [Api\ProductController::class, 'index']);
         });
-        Route::prefix('orders')->group(function () {
-            Route::post('/', [OrderController::class, 'index']);
+        Route::prefix('orders')->controller(OrderController::class)->group(function () {
+            // Route::post('/', [OrderController::class, 'index']);
+            Route::post('/', 'index');
+            Route::get('/{order}/pdf', 'downloadInvoice');
+            Route::delete('/{order}', 'destroy');
+            Route::get('status','getOrderStatus');
+            Route::put('{id}','update');
+            Route::get('{id}','show');
+            Route::post('summary','getSummary');
         });
       });
 });
