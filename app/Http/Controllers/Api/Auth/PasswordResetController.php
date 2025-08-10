@@ -19,84 +19,99 @@ class PasswordResetController extends Controller
 {
     public function __construct(protected WhatsAppOtpService $otpService)
     {
-    $this->otpService = $otpService;
+        $this->otpService = $otpService;
     }
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|exists:users,phone'
+            "phone" => "required|exists:users,phone",
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Validation failed",
+                    "errors" => $validator->errors(),
+                ],
+                422,
+            );
         }
 
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where("phone", $request->phone)->first();
         $otpResponse = $this->otpService->sendOtp($user);
 
-        if (!$otpResponse['success']) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send reset code',
-                'errors' => $otpResponse['message'] ?? null
-            ], 400);
+        if (!$otpResponse["success"]) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Failed to send reset code",
+                    "errors" => $otpResponse["message"] ?? null,
+                ],
+                400,
+            );
         }
 
         return response()->json([
-            'success' => true,
-            'message' => 'Reset code has been sent to your WhatsApp'
+            "success" => true,
+            "message" => "Reset code has been sent to your WhatsApp",
         ]);
     }
 
     public function resetPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|exists:users,phone',
-            'otp_code' => 'required',
-            'password' => 'required|min:4|confirmed',
+            "phone" => "required|exists:users,phone",
+            "otp_code" => "required",
+            "password" => "required|min:4|confirmed",
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Validation failed",
+                    "errors" => $validator->errors(),
+                ],
+                422,
+            );
         }
 
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where("phone", $request->phone)->first();
 
         // Find the latest non-expired OTP for this user
-        $userOtp = UserOtp::where('user_id', $user->id)
-            ->where('otp_code', $request->otp_code)
-            ->where('is_verified', false)
-            ->where('expires_at', '>', now())
+        $userOtp = UserOtp::where("user_id", $user->id)
+            ->where("otp_code", $request->otp_code)
+            ->where("is_verified", false)
+            ->where("expires_at", ">", now())
             ->first();
 
         if (!$userOtp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid or expired OTP code'
-            ], 400);
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "Invalid or expired OTP code",
+                ],
+                400,
+            );
         }
 
         // Mark OTP as verified
         $userOtp->update([
-            'is_verified' => true,
-            'verified_at' => now()
+            "is_verified" => true,
+            "verified_at" => now(),
         ]);
 
         // Update password
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Password updated successfully',
-        ], 200);
+        return response()->json(
+            [
+                "success" => true,
+                "message" => "Password updated successfully",
+            ],
+            200,
+        );
     }
 }
