@@ -3,6 +3,7 @@
 /public/build
 /public/hot
 /public/storage
+/public/firebase
 /public/index.php
 /resources/views/dashboard/layouts
 /storage/*.key
