@@ -69,25 +69,27 @@ class OrderController extends Controller
     $date = Carbon::parse($request->input("filter_by_day"));
     $query->whereDate("created_at", $date);
 
-} elseif ($request->filled("filter_by_week")) {
-    $date = Carbon::parse($request->input("filter_by_week"));
-    $query->whereBetween("created_at", [
-        $date->copy()->startOfWeek(),
-        $date->copy()->endOfWeek(),
-    ]);
+        } elseif ($request->filled("filter_by_week")) {
+            $date = Carbon::parse($request->input("filter_by_week"));
+            $query->whereBetween("created_at", [
+                $date->copy()->startOfWeek(),
+                $date->copy()->endOfWeek(),
+            ]);
 
-} elseif ($request->filled("filter_by_month")) {
-    $date = Carbon::parse($request->input("filter_by_month"));
-    $query->whereMonth("created_at", $date->month)
-          ->whereYear("created_at", $date->year);
-}
+        } elseif ($request->filled("filter_by_month")) {
+            $date = Carbon::parse($request->input("filter_by_month"));
+            $query->whereMonth("created_at", $date->month)
+                  ->whereYear("created_at", $date->year);
+        }
 
 
-        $orders = $query->paginate($perPage, ["*"], "page", $page);
-        return $this->successResponse(
-            OrderResource::collection($orders),
-            "Orders retrieved successfully",
-        );
+       $orders = $query->paginate($perPage, ["*"], "page", $page);
+    return $this->paginate(
+    $orders,
+    "Orders retrieved successfully",
+    200,
+    OrderResource::class
+);
     }
 
     public function downloadInvoice($id)
