@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Cashier\AuthController;
 use App\Http\Controllers\Cashier\OrderController;
+use App\Http\Controllers\Cashier\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | Cashier Routes
@@ -25,20 +26,32 @@ Route::prefix('v1')->group(function () {
         Route::post('admin/login', 'adminLogin');
         Route::post('manager/login' ,'managerLogin');
         Route::post('logout' ,'logout')->middleware(['cashier_auth']);
-      });
-      Route::middleware(['cashier_auth'])->group(function () {
+
+        // FCM Token management
+        Route::post('admin/fcm-token', 'updateAdminFcmToken')->middleware(['cashier_auth', 'auth:admin-api']);
+        Route::post('manager/fcm-token', 'updateManagerFcmToken')->middleware(['cashier_auth', 'auth:manager-api']);
+    });
+    Route::middleware(['cashier_auth'])->group(function () {
         Route::prefix('products')->group(function () {
             Route::post('/', [Api\ProductController::class, 'index']);
         });
-        Route::prefix('orders')->controller(OrderController::class)->group(function () {
-            // Route::post('/', [OrderController::class, 'index']);
-            Route::post('/', 'index');
-            Route::get('/{order}/pdf', 'downloadInvoice');
-            Route::delete('/{order}', 'destroy');
+        Route::prefix('orders')->controller(\App\Http\Controllers\Cashier\OrderController::class)->group(function () {
             Route::get('status','getOrderStatus');
-            Route::put('{id}','update');
-            Route::get('{id}','show');
             Route::post('summary','getSummary');
+            Route::get('/',  'index');
+            // Route::get('/{id}/invoice',  'downloadInvoice');
+            Route::get('/{order}/pdf', 'downloadInvoice');
+            Route::get('/{id}',  'show');
+            Route::put('/{id}',  'update');
+            Route::delete('/{id}',  'destroy');
+            Route::delete('/{order}', 'destroy');
         });
       });
+
+    // Notification routes
+    Route::prefix('notifications')->middleware(['cashier_auth'])->group(function () {
+        Route::get('admin', [\App\Http\Controllers\Cashier\NotificationController::class, 'getAdminNotifications'])->middleware('auth:admin-api');
+        Route::get('manager', [\App\Http\Controllers\Cashier\NotificationController::class, 'getManagerNotifications'])->middleware('auth:manager-api');
+        Route::post('mark-read/{id}', [\App\Http\Controllers\Cashier\NotificationController::class, 'markAsRead']);
+    });
 });

@@ -37,4 +37,8 @@ return [
         'api_version' => env('WHATSAPP_API_VERSION', 'v18.0'),
     ],
 
+    // 'firebase' => [
+    // 'server_key' => env('FIREBASE_SERVER_KEY'),
+    // ],
+
 ];

@@ -9,14 +9,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\{DB};
 use App\Enums\Order\{OrderStatus, OrderPaymentType};
 use App\Models\Concerns\History\Historyable;
+use App\Observers\OrderObserver;
+
 class Order extends Model
 {
     use HasFactory, Historyable;
     protected $fillable = ['user_id', 'status', 'total_price', 'branch_id', 'order_location', 'order_number', 'is_delivery', 'delivery_fee', 'payment_type', 'payment_status', 'coupon_discount'];
+
+    protected static function booted()
+    {
+         static::addGlobalScope(new OrderScope);
+    }
     public function products()
     {
         return $this->belongsToMany(Product::class, 'order_product')
-            ->withPivot('id', 'quantity', 'price')
+            ->withPivot('id', 'quantity', 'price', 'isUseLoyaltyPoints')
             ->using(OrderProduct::class); // Enable pivot model
     }
     public function details()
@@ -64,10 +71,6 @@ class Order extends Model
         return $this->status->label();
     }
 
-    protected static function booted()
-    {
-        static::addGlobalScope(new OrderScope);
-    }
 
     public function getDeliveryTypeAttribute() {
         if ($this->is_delivery) {
@@ -76,7 +79,7 @@ class Order extends Model
         }
         return 'استلام من الفرع';
     }
-    
+
         public function deliveryType()
     {
         return $this->is_delivery ? 'توصيل للعميل' : 'استلام من الفرع';

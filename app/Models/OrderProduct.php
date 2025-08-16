@@ -10,7 +10,7 @@ class OrderProduct extends Pivot
 {
     use HasFactory;
     protected $table = 'order_product';
-    protected $fillable = ['order_id', 'product_id', 'price', 'quantity'];
+    protected $fillable = ['order_id', 'product_id','isUseLoyaltyPoints' ,'price', 'quantity'];
     public function detail()
     {
         return $this->hasOne(OrderProductDetail::class, 'order_product_id');

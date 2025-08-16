@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\ManagerDevice;
 
 class Manager extends  Authenticatable implements JWTSubject
 {
@@ -33,5 +34,9 @@ class Manager extends  Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims() {
         return [];
+    }
+
+    public function devices(){
+        return $this->hasMany(ManagerDevice::class,'manager_id','id');
     }
 }

@@ -27,7 +27,7 @@ class OrderResource extends JsonResource
             'products' => $this->products->map(function ($product) use ($allExtras) {
                 $productDetail = $this->details->where('order_product_id', $product->pivot->id)->first();
                 $productExtras = $allExtras->where('order_product_id', $product->pivot->id);
-                
+
                 // Prepare details array
                 $details = [];
                 if ($productDetail) {
@@ -43,13 +43,14 @@ class OrderResource extends JsonResource
                         $details['type_name'] = $productDetail->type->name ?? null;
                     }
                 }
-                
+
                 return [
                     'product_id' => $product->id,
                     'name' => $product->name,
                     'quantity' => $product->pivot->quantity,
                     'base_price' => $product->price,
                     'total_product_price' => $product->pivot->price,
+                    'isUseLoyaltyPoints' => boolval($product->pivot->isUseLoyaltyPoints),
                     'details' => $details, // This will be an empty array if no details
                     'extras' => $productExtras->map(function ($extra) {
                         return [
