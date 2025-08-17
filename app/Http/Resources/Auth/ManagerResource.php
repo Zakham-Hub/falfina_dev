@@ -21,6 +21,9 @@ class ManagerResource extends JsonResource
             'profile' => $this->whenLoaded('profile'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'branch_name' => $this->branch ? $this->branch->name : null,
+            'branch_id' => $this->branch ? $this->branch->id : null,
+
         ];
     }
 }
