@@ -46,7 +46,7 @@ class OrderController extends Controller
                     $product = Product::findOrFail($productData["product_id"]);
                     $order->products()->attach($product->id, [
                         "quantity" => $productData["quantity"],
-                        "price" => $product->price * $productData["quantity"],
+                        "price" => $productData['isUseLoyaltyPoints'] ? 0 : $product->price * $productData["quantity"],
                         'isUseLoyaltyPoints' => $productData['isUseLoyaltyPoints'] ?? false,
                     ]);
                     $orderProduct = $order
