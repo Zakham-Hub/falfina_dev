@@ -28,6 +28,7 @@ class OrderController extends Controller
         try {
             $order = DB::transaction(function () use ($request) {
                 $user = auth()->user();
+                $loyaltyPoints= false;
                 $order = Order::create([
                     "user_id" => $user->id,
                     "branch_id" => $request->branch_id,
@@ -44,10 +45,11 @@ class OrderController extends Controller
                 $couponDiscount = 0;
                 foreach ($request->products as $productData) {
                     $product = Product::findOrFail($productData["product_id"]);
+                    $loyaltyPoints = $productData['isUseLoyaltyPoints'] ?? false;
                     $order->products()->attach($product->id, [
                         "quantity" => $productData["quantity"],
-                        "price" => $productData['isUseLoyaltyPoints'] ? 0 : $product->price * $productData["quantity"],
-                        'isUseLoyaltyPoints' => $productData['isUseLoyaltyPoints'] ?? false,
+                        "price" => $loyaltyPoints ? 0 : $product->price * $productData["quantity"],
+                        'isUseLoyaltyPoints' => $loyaltyPoints ,
                     ]);
                     $orderProduct = $order
                         ->products()
@@ -59,8 +61,8 @@ class OrderController extends Controller
                         "order_product_id" => $orderProduct->id,
                         "size_id" => $productData["size_id"] ?? null,
                         "type_id" => $productData["type_id"] ?? null,
-                        "size_price" => $productData["size_price"] ?? 0,
-                        "type_price" => $productData["type_price"] ?? 0,
+                        "size_price" => $loyaltyPoints ? 0 : $productData["size_price"] ,
+                        "type_price" => $loyaltyPoints ? 0 : $productData["type_price"] ,
                     ]);
                     $totalPrice +=
                         ($detail->size_price + $detail->type_price) *
