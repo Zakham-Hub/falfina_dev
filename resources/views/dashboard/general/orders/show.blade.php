@@ -273,6 +273,9 @@
                                 <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('{{ $order->order_location }}')">
                                     <i class="fas fa-copy me-2"></i> نسخ الرابط
                                 </button>
+                                  <a href="{{ route('general.orders.viewPdf',$order->id) }}" target="_blank" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-download"></i> تحميل الفاتوره
+                                </a>
                             </div>
                         </span>
                     </div>
