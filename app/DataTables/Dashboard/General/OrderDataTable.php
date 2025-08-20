@@ -76,19 +76,19 @@ class   OrderDataTable extends BaseDataTable
             })
             ->editColumn('payment_status', function (Order $order) {
                 $status = (int) $order->payment_status;
-            
+
                 $label = match ($status) {
                     1 => 'تم الدفع',
                     0 => 'الدفع عند الإستلام',
                     default => 'لم يُحدد',
                 };
-            
+
                 $badgeClass = match ($status) {
                     1 => 'bg-success',
                     0 => 'bg-danger',
                     default => 'bg-secondary',
                 };
-            
+
                 return '<span class="badge ' . $badgeClass . '">' . $label . '</span>';
             })
 
@@ -98,7 +98,17 @@ class   OrderDataTable extends BaseDataTable
             ->editColumn('is_delivery', function (Order $order) {
                 return $order->delivery_type;
             })
-            ->rawColumns(['is_delivery','phone','action', 'created_at', 'updated_at', 'user_id', 'branch_id', 'product_count_quantity', 'order_products_count', 'status', 'payment_type', 'payment_status']);
+            ->addColumn('used_loyalty_points', function (Order $order) {
+                return $order->products()->where('isUseLoyaltyPoints', true)->exists()
+                    ? '<span class="badge bg-success">نعم</span>'
+                    : '<span class="badge bg-danger">لا</span>';
+            })
+            ->editColumn('user_id', function (Order $order) {
+                return $order?->coupon_discount
+                    ? '<span class="badge bg-success">' . $order->coupon_discount . '</span>'
+                    : '<span class="badge bg-danger">لا يوجد</span>';;
+            })
+            ->rawColumns(['is_delivery','coupon_discount','phone','action','used_loyalty_points', 'created_at', 'updated_at', 'user_id', 'branch_id', 'product_count_quantity', 'order_products_count', 'status', 'payment_type', 'payment_status']);
     }
 
 
@@ -131,6 +141,8 @@ class   OrderDataTable extends BaseDataTable
             ['name' => 'payment_status', 'data' => 'payment_status', 'title' => 'حاله الدفع', 'orderable' => false, 'searchable' => false],
             ['name' => 'payment_type', 'data' => 'payment_type', 'title' => 'طريقة الدفع', 'orderable' => false, 'searchable' => false],
             ['name' => 'is_delivery', 'data' => 'is_delivery', 'title' => 'حاله التوصيل', 'orderable' => false, 'searchable' => false],
+            ['name' => 'used_loyalty_points', 'data' => 'used_loyalty_points', 'title' => 'استخدم نقاط الولاء', 'orderable' => false, 'searchable' => false],
+            ['name' => 'coupon_discount', 'data' => 'coupon_discount', 'title' => 'خصم الكوبون', 'orderable' => false, 'searchable' => false],
             ['name' => 'branch_id', 'data' => 'branch_id', 'title' => 'الفرع', 'orderable' => false, 'searchable' => false],
             ['name' => 'created_at', 'data' => 'created_at', 'title' => trans('dashboard/general.created_at'), 'orderable' => false, 'searchable' => false],
             ['name' => 'updated_at', 'data' => 'updated_at', 'title' => trans('dashboard/general.updated_at'), 'orderable' => false, 'searchable' => false],
