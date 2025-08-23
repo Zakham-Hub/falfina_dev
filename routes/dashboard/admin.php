@@ -49,7 +49,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::resource('sliders', Dashboard\SliderController::class);
         Route::resource('types', Dashboard\TypeController::class);
         Route::resource('coupons', Dashboard\CouponController::class);
-//        Route::resource('orders', Dashboard\OrderController::class);
         Route::resource('users', Dashboard\UserController::class)->names('user');
         Route::resource('packages', Dashboard\PackageController::class)->names('packages');
         Route::group(['prefix' => 'general', 'as' => 'general.'], function () {

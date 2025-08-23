@@ -8,7 +8,7 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
-        
+
         .section-title {
             color: #3F4254;
             font-weight: 600;
@@ -16,67 +16,67 @@
             padding-bottom: 0.75rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .info-card {
             background: #F8F9FA;
             border-radius: 8px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        
+
         .info-row {
             display: flex;
             margin-bottom: 0.75rem;
         }
-        
+
         .info-label {
             font-weight: 600;
             color: #7E8299;
             min-width: 150px;
             font-size: 15px !important;
         }
-        
+
         .info-value {
             color: #3F4254;
             font-size: 15px !important;
             flex-grow: 1;
         }
-        
+
         .badge-lg {
             font-size: 1rem;
             padding: 0.5rem 0.75rem;
         }
-        
+
         .product-img {
             width: 60px;
             height: 60px;
             object-fit: cover;
             border-radius: 5px;
         }
-        
+
         .action-btns {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
             margin-top: 2rem;
         }
-        
+
         .map-container {
             height: 300px;
             border-radius: 8px;
             overflow: hidden;
             margin-top: 1rem;
         }
-        
+
         .text-decoration-line-through {
             text-decoration: line-through;
         }
-        
+
         @media (max-width: 768px) {
             .info-row {
                 flex-direction: column;
             }
-            
+
             .info-label {
                 margin-bottom: 0.25rem;
             }
@@ -103,18 +103,18 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Body -->
             <div class="card-body pt-0">
                 <!-- Order Summary -->
                 <div class="info-card">
                     <h4 class="section-title">معلومات الطلب</h4>
-                    
+
                     <div class="info-row">
                         <span class="info-label">رقم الطلب:</span>
                         <span class="info-value">{{ $order->order_number }}</span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">حالة الطلب:</span>
                         <span class="info-value">
@@ -130,7 +130,7 @@
                             @endif
                         </span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">طريقة الدفع:</span>
                         <span class="info-value">
@@ -139,7 +139,7 @@
                             </span>
                         </span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">حالة الدفع:</span>
                         <span class="info-value">
@@ -159,12 +159,12 @@
                             <span class="badge badge-lg {{ $class }}">{{ $label }}</span>
                         </span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">نوع الطلب:</span>
                         <span class="info-value">{{ $order->deliveryType() }}</span>
                     </div>
-                    
+
                     @if($order->coupon)
                     <div class="info-row">
                         <span class="info-label">كود الخصم:</span>
@@ -178,32 +178,32 @@
                         </span>
                     </div>
                     @endif
-                    
+
                     @php
                         $subtotal = $order->products->sum(function($product) {
                             return ($product->pivot->detail?->size_price ?? $product->price) * $product->pivot->quantity;
                         });
-                        
+
                      $extrasTotal = $order->products->sum(function($product) {
     return $product->pivot->extras->sum(function($extra) {
         return $extra->price * $extra->quantity;
     });
 });
                     @endphp
-                    
+
                     <!-- إجمالي المنتجات -->
                     <div class="info-row">
                         <span class="info-label">إجمالي المنتجات:</span>
                         <span class="info-value">{{ number_format($subtotal, 2) }} {{ $settings?->currency }}</span>
                     </div>
-                    
+
                     <!-- الخصم (إذا وجد) -->
                     @if($order->coupon_discount > 0)
                     <div class="info-row">
                         <span class="info-label">قيمة الخصم:</span>
                         <span class="info-value text-danger">- {{ number_format($order->coupon_discount, 2) }} {{ $settings?->currency }}</span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">نسبة الخصم:</span>
                         <span class="info-value">
@@ -213,13 +213,13 @@
                             {{ number_format($discountPercentage, 2) }}%
                         </span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">إجمالي بعد الخصم:</span>
                         <span class="info-value">{{ number_format($subtotal - $order->coupon_discount, 2) }} {{ $settings?->currency }}</span>
                     </div>
                     @endif
-                    
+
                     <!-- رسوم التوصيل -->
                     @if($order->delivery_fee > 0)
                     <div class="info-row">
@@ -227,42 +227,42 @@
                         <span class="info-value">{{ number_format($order->delivery_fee, 2) }} {{ $settings?->currency }}</span>
                     </div>
                     @endif
-                    
+
                     <!-- السعر الإجمالي النهائي -->
                     <div class="info-row">
                         <span class="info-label">السعر الإجمالي:</span>
                         <span class="info-value fw-bold">
-                            {{ number_format(($subtotal - ($order->coupon_discount ?? 0)) + ($order->delivery_fee ?? 0)+$extrasTotal, 2) }} 
+                            {{ number_format(($subtotal - ($order->coupon_discount ?? 0)) + ($order->delivery_fee ?? 0)+$extrasTotal, 2) }}
                             {{ $settings?->currency }}
                         </span>
                     </div>
                 </div>
-                
+
                 <!-- Customer Info -->
                 <div class="info-card">
                     <h4 class="section-title">معلومات العميل</h4>
-                    
+
                     <div class="info-row">
                         <span class="info-label">الاسم:</span>
                         <span class="info-value">{{ $order->user->name }}</span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">البريد الإلكتروني:</span>
                         <span class="info-value">{{ $order->user->email }}</span>
                     </div>
-                    
+
                     <div class="info-row">
                         <span class="info-label">رقم الهاتف:</span>
                         <span class="info-value">{{ $order->user->phone ?? 'غير متوفر' }}</span>
                     </div>
                 </div>
-                
+
                 <!-- Location Info -->
                 @if($order->order_location)
                 <div class="info-card">
                     <h4 class="section-title">موقع التوصيل</h4>
-                    
+
                     <div class="info-row">
                         <span class="info-label">العنوان:</span>
                         <span class="info-value">
@@ -279,15 +279,15 @@
                             </div>
                         </span>
                     </div>
-                    
-                    <div class="map-container" id="orderLocationMap"></div>
+
+{{--                    <div class="map-container" id="orderLocationMap"></div>--}}
                 </div>
                 @endif
-                
+
                 <!-- Products -->
                 <div class="info-card">
                     <h4 class="section-title">المنتجات</h4>
-                    
+
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -307,7 +307,7 @@
                                     // سعر المنتج (الحجم إذا وجد أو السعر الأساسي)
                                     $productPrice = $product->pivot->detail?->size_price ?? $product->price;
                                     $basePrice = $productPrice * $product->pivot->quantity;
-                                    
+
                                     // حساب حصة المنتج من الخصم (نسبيًا)
                                     $productDiscount = $subtotal > 0 ? ($basePrice / $subtotal) * ($order->coupon_discount ?? 0) : 0;
                                     $finalPrice = $basePrice - $productDiscount;
@@ -345,7 +345,7 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <!-- Actions -->
                 <div class="action-btns">
                     <a href="{{ route('general.orders.index') }}" class="btn btn-light-primary">
@@ -375,7 +375,7 @@
             } catch (e) {
                 fallbackCopy(text);
             }
-            
+
             function fallbackCopy(text) {
                 const tempInput = document.createElement("input");
                 tempInput.value = text;
@@ -383,7 +383,7 @@
                 tempInput.select();
                 document.execCommand("copy");
                 document.body.removeChild(tempInput);
-                
+
                 toastr.success("تم نسخ الرابط بنجاح", "نجاح", {
                     progressBar: true,
                     closeButton: true,
@@ -391,7 +391,7 @@
                 });
             }
         }
-        
+
         // Initialize map if location exists
         @if($order->order_location)
         document.addEventListener('DOMContentLoaded', function() {
@@ -400,20 +400,20 @@
                 const url = new URL('{{ $order->order_location }}');
                 const params = new URLSearchParams(url.search);
                 const q = params.get('q');
-                
+
                 if (q) {
                     const coords = q.split(',');
                     if (coords.length === 2) {
                         const lat = parseFloat(coords[0]);
                         const lng = parseFloat(coords[1]);
-                        
+
                         if (!isNaN(lat) && !isNaN(lng)) {
                             const map = L.map('orderLocationMap').setView([lat, lng], 15);
-                            
+
                             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             }).addTo(map);
-                            
+
                             L.marker([lat, lng]).addTo(map)
                                 .bindPopup('موقع التوصيل')
                                 .openPopup();
@@ -422,7 +422,7 @@
                 }
             } catch (e) {
                 console.error("Error initializing map:", e);
-                document.getElementById('orderLocationMap').innerHTML = 
+                document.getElementById('orderLocationMap').innerHTML =
                     '<div class="alert alert-warning m-0">تعذر تحميل الخريطة. يمكنك <a href="{{ $order->order_location }}" target="_blank">مشاهدتها هنا</a></div>';
             }
         });
