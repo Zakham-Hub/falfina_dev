@@ -4,7 +4,9 @@ namespace App\Services\Cashier;
 
 use Kreait\Firebase\Factory as FirebaseFactory;
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\MulticastSendReport;
+use Kreait\Firebase\Messaging\Notification;
+use Kreait\Firebase\Messaging\ApnsConfig;
+use Kreait\Firebase\Messaging\ApnsPayload;
 
 class FirebaseNotificationService
 {
@@ -13,7 +15,7 @@ class FirebaseNotificationService
     public function __construct()
     {
         $serviceAccountPath = public_path(
-            "firebase/" . env("FIREBASE_CREDENTIALS"),
+            'firebase/' . env('FIREBASE_CREDENTIALS')
         );
 
         $this->messaging = (new FirebaseFactory())
@@ -32,16 +34,25 @@ class FirebaseNotificationService
      */
     public function sendNotification(string $deviceToken, string $title, string $body): void
     {
-        $message = CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification([
-                'title' => $title,
-                'body' => $body,
-            ]);
+        // نجهز الـ notification
+        $notification = Notification::create($title, $body);
 
+        // إعدادات خاصة بالـ iOS (APNs)
+        $apnsConfig = ApnsConfig::new()
+            ->withPayload(
+                ApnsPayload::new()->withAps([
+                    'sound' => 'default', // صوت الإشعار
+                ])
+            );
+
+        // بناء الرسالة
+        $message = CloudMessage::withTarget('token', $deviceToken)
+            ->withNotification($notification)
+            ->withApnsConfig($apnsConfig);
+
+        // إرسال الرسالة
         $this->messaging->send($message);
     }
-
-
 
     public function sendMultipleNotifications(array $deviceTokens, string $title, string $body): void
         {
