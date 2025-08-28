@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\{View, Cache};
 use App\Models\Concerns\UploadMedia;
 use App\Services\Contracts\UserInterface;
 use App\Repositories\UserRepository;
-
+use Carbon\Carbon;
 class AppServiceProvider extends ServiceProvider
 {
     use UploadMedia;
@@ -17,6 +17,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+          Carbon::serializeUsing(function ($carbon) {
+        return $carbon->setTimezone(config('app.timezone'))->toDateTimeString();
+    });
         $settings = Cache::remember('settings', now()->addMinutes(5), function () {
             return Setting::with(['media'])->first() ?? new Setting();
         });
