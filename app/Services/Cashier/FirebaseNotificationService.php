@@ -6,7 +6,6 @@ use Kreait\Firebase\Factory as FirebaseFactory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Messaging\ApnsConfig;
-use Kreait\Firebase\Messaging\ApnsPayload;
 
 class FirebaseNotificationService
 {
@@ -37,25 +36,24 @@ class FirebaseNotificationService
         // نجهز الـ notification
         $notification = Notification::create($title, $body);
 
-        // إعدادات خاصة بالـ iOS (APNs)
-        $apnsConfig = ApnsConfig::new()
-            ->withPayload(
-                ApnsPayload::new()->withAps([
-                    'sound' => 'notification.caf', // صوت الإشعار
-                ])
-            );
+        // إعدادات خاصة بـ iOS (صوت الإشعار)
+        $apnsConfig = ApnsConfig::new()->withSound('notification.caf');
 
         // بناء الرسالة
         $message = CloudMessage::withTarget('token', $deviceToken)
             ->withNotification($notification)
+            ->withDefaultSounds() // يضيف الصوت الافتراضي للمنصات الأخرى
             ->withApnsConfig($apnsConfig);
 
         // إرسال الرسالة
         $this->messaging->send($message);
     }
 
+    /**
+     * إرسال إشعارات متعددة
+     */
     public function sendMultipleNotifications(array $deviceTokens, string $title, string $body): void
-        {
+    {
         foreach ($deviceTokens as $token) {
             try {
                 $this->sendNotification($token, $title, $body);
@@ -65,3 +63,4 @@ class FirebaseNotificationService
         }
     }
 }
+
