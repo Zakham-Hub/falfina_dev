@@ -41,7 +41,7 @@ class FirebaseNotificationService
         $apnsConfig = ApnsConfig::new()
             ->withPayload(
                 ApnsPayload::new()->withAps([
-                    'sound' => 'default', // صوت الإشعار
+                    'sound' => 'notification.caf', // صوت الإشعار
                 ])
             );
 
